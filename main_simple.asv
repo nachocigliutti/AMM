@@ -1,0 +1,45 @@
+clear;
+
+rng(1005)
+
+cd('/Users/nacho/Dropbox/AMM/MATLAB/1_ols')
+
+addpath(strcat(cd, '/utils/'))
+respath = strcat(cd, '/results/');
+
+%-------------------------------------------------------------------------------
+% 1. SETUP
+
+
+N = 200; 		    % Sample size
+S = 300;         % Simulations
+sigma = 2;       % Noise dispersion (simulated observations)
+max_iter = 600;	 % For AMM optimization
+
+%--------------------------------------------------------------------------
+% 2. SIMULATIONS
+
+% Structure
+p.max_iter = max_iter;
+p.parT = 1;
+p.par0 = 0;
+p.sigma = sigma;
+p.N = N;
+p.S = S;
+
+% Print
+fprintf('\n')
+fprintf('Simulations = %.0f, N = %.0f \n', p.S, p.N);
+fprintf('Error dispersion = %.2f \n', p.sigma);
+
+tic
+stats = estimate(p);
+toc
+
+RES = array2table(round(stats, 3), ...
+%'RowNames', {'OLS -  mu', 'AMM - mu', 'OLS - beta', 'AMM - beta'}, ...
+'RowNames', {'OLS', 'AMM'}, ...
+'VariableNames', {'Bias','STD', 'RMSE','p10', 'p25', 'p50', 'p75', 'p90'});
+
+fprintf('\n')
+disp(RES);
